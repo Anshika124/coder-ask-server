@@ -11,4 +11,4 @@ mongoose.connect(databaseUrl, {
   console.log('Connected to database');
 }).catch((error) => {
   console.error(error);
-});         
+});      

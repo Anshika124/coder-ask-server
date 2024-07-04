@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 require('./src/config/config.js')
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -15,8 +16,14 @@ app.use(bodyParser.json());
 
 // Simple route
 app.get('/', (req, res) => {
-    res.send('Hello World?????????????????????????/!');
+    res.send('Hello World!');
 });
+
+const userRouter = require('./src/routes/user.js');
+
+app.use('/users', userRouter);
+
+
 
 // Import routes
 // const usersRouter = require('./routes/users');
