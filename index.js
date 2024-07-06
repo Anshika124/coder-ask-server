@@ -12,28 +12,15 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB connection
 
-// Simple route
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
 const userRouter = require('./src/routes/user.js');
 
-app.use('/users', userRouter);
+app.use('/users', userRouter);    
 
-
-
-// Import routes
-// const usersRouter = require('./routes/users');
-// const questionsRouter = require('./routes/questions');
-// const answersRouter = require('./routes/answers');
-
-// Use routes
-// app.use('/users', usersRouter);
-// app.use('/questions', questionsRouter);
-// app.use('/answers', answersRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
