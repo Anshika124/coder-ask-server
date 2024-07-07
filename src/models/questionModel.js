@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 const questionSchema = new Schema(
     {
         title: { 
@@ -13,10 +15,10 @@ const questionSchema = new Schema(
         description: { 
             type: String 
         },
-        upvotesCount: [
+        upvotesList: [
             { 
-                type: Schema.Types.ObjectId, 
-                ref: 'User' 
+                userId: { type: Schema.Types.ObjectId, ref: 'User' },
+                isUpvote: { type: Boolean, required: true }
             }
         ],
         answersList: [

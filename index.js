@@ -8,7 +8,6 @@ require('./src/config/config.js')
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -18,8 +17,10 @@ app.get('/', (req, res) => {
 });
 
 const userRouter = require('./src/routes/user.js');
-
 app.use('/users', userRouter);    
+
+const questionRouter = require('./src/routes/question.js');
+app.use('/questions', questionRouter);    
 
 
 app.listen(port, () => {

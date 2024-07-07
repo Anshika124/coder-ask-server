@@ -107,7 +107,7 @@ router.delete('/deletebyusername', async(req, res) => {
 
 router.get('/getdata', async(req, res) => {
     try {
-        let data = await UserModel.find({},{email:1, _id:0});
+        let data = await UserModel.find();
         res.send(data);
     }
     catch (err)
