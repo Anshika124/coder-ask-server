@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+const AnswerModel = require("../models/answerModel.js");
 const QuestionModel = require("../models/questionModel.js");
+const ProfileModel = require("../models/profileModel.js");
 
 router.post('/addquestion', async (req, res) => {
     const { title, tags, description, postedBy} = req.body;
@@ -13,6 +15,9 @@ router.post('/addquestion', async (req, res) => {
 
     try {
         const savedQuestion = await question.save();
+        let profile = await ProfileModel.findOne({userId:postedBy});
+        profile.questionsList.push(savedQuestion._id);
+        await profile.save();
         res.send(savedQuestion);
     }
     catch (err) {
@@ -45,7 +50,7 @@ router.put('/updatequestion', async (req, res) => {
     try {
         let updatedQuestion = await QuestionModel.findOneAndUpdate(
             { _id : questionId},
-            { $set : { title: title, tags:tags, description: description}},
+            { $set : { title: title, tags:tags, description: description, editedOn: Date.now()}},
             { new: true}
         );
         res.send(updatedQuestion);
@@ -59,6 +64,22 @@ router.delete('/deletequestion', async (req, res) => {
 
     try {
         let deletedQuestion = await QuestionModel.findOneAndDelete({ _id: questionId});
+        await ProfileModel.updateOne(
+            { userId: deletedQuestion.postedBy },
+            { $pull: { questionsList: questionId } }
+        );
+
+        let answers = await AnswerModel.findMany({answeredFor: questionId})
+
+        for (let answer in answers) {
+            await ProfileModel.updateOne(
+                {userId: answer.answeredBy},
+                { $pull: { answersList: answer._id}}
+            )
+        }
+
+        await AnswerModel.deleteMany({answeredFor: questionId})
+
         res.send(deletedQuestion);
     }
     catch (err){

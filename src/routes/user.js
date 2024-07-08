@@ -72,7 +72,7 @@ router.put('/forgotpassword', async(req, res) => {
         const updatedUserData = await UserModel.findOneAndUpdate(
             { email: email,  userName: userName },
             { $set: { password: password } },
-            { new: true} // Return the updated document
+            { new: true } 
         );
 
         if (!updatedUserData) {
@@ -105,7 +105,7 @@ router.delete('/deletebyusername', async(req, res) => {
 
 
 
-router.get('/getdata', async(req, res) => {
+router.get('/getalluser', async(req, res) => {
     try {
         let data = await UserModel.find();
         res.send(data);

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 const answerSchema = new Schema(
     {
         answerFor: { 
@@ -10,10 +12,10 @@ const answerSchema = new Schema(
             type: String, 
             required: true 
         },
-        upvoteCounts: [
+        upvotesList: [
             { 
-                type: Schema.Types.ObjectId, 
-                ref: 'User' 
+                userId: { type: Schema.Types.ObjectId, ref: 'User' },
+                isUpvote: { type: Boolean, required: true }
             }
         ],
         answeredOn: { 

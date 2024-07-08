@@ -22,6 +22,9 @@ app.use('/users', userRouter);
 const questionRouter = require('./src/routes/question.js');
 app.use('/questions', questionRouter);    
 
+const answerRouter = require('./src/routes/answer.js');
+app.use('/answers', answerRouter);    
+
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
