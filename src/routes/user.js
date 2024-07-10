@@ -25,6 +25,14 @@ router.post('/register', async(req, res) => {
     })
 
     try {
+        let emailExist = await UserModel.findOne({email: email});
+        if (emailExist !== null && Object.keys(emailExist).length > 0 ){
+            return res.status(401).json({ success: false, value:"email",message: "This email is used by another account. Please use another email." });
+        }
+        let userNameExist = await UserModel.findOne({userName:userName});
+        if (userNameExist !== null && Object.keys(userNameExist).length > 0){
+            return res.status(401).json({ success: false, value:"username", message: "This username is used by another account. Please use another username." });
+        }
         let userSaveResult = await user.save();
         console.log(userSaveResult);
         const profile = new ProfileModel({
@@ -33,7 +41,6 @@ router.post('/register', async(req, res) => {
 
         let profileSaveResult = await profile.save();
         console.log(profileSaveResult);
-        
 
         res.send(userSaveResult);
     }
@@ -44,27 +51,23 @@ router.post('/register', async(req, res) => {
 
 });
 
-router.post('/login', async(req, res) => {
+router.post('/login', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    // console.log(req.body);
-    // console.log(email, password);
     try {
-        let user = await UserModel.findOne({email : email });
-        if (!user) {
-            res.send("User not found");
-        }
-        else if (password !== user.password) {
-            res.send("Invalid password");
-        }
-        else {
-            res.send("User login successful");
-        }
+      let user = await UserModel.findOne({ email: email });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      } else if (password !== user.password) {
+        return res.status(401).json({ success: false, message: "Invalid Email/password" });
+      } else {
+        return res.status(200).json({ success: true, message: "User login successful" });
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ success: false, message: "Server error" });
     }
-    catch(err){
-        console.log(err);
-    }
-});
+  });
 
 
 router.put('/forgotpassword', async(req, res) => {
