@@ -9,13 +9,16 @@ const profileSchema = new Schema(
             required: true 
         },
         bio: { 
-            type: String 
+            type: String ,
+            default: ""
         },
         profilePicture: { 
-            type: String 
+            type: String ,
+            default: ""
         },
         socialMediaLinks: { 
-            type: Map, of: String 
+            type: Map, of: String ,
+            default: () => ({linkedin: '', github:'', twitter:''})
         }, // e.g., { twitter: 'url', facebook: 'url' }
         questionsList: [
             { 

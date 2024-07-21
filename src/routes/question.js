@@ -18,7 +18,8 @@ router.post('/addquestion', async (req, res) => {
         let profile = await ProfileModel.findOne({userId:postedBy});
         profile.questionsList.push(savedQuestion._id);
         await profile.save();
-        res.send(savedQuestion);
+        
+        return res.status(200).json({ success: true, message: "Question updated", value: savedQuestion});
     }
     catch (err) {
     }

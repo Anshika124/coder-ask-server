@@ -27,11 +27,11 @@ router.post('/register', async(req, res) => {
     try {
         let emailExist = await UserModel.findOne({email: email});
         if (emailExist !== null && Object.keys(emailExist).length > 0 ){
-            return res.status(401).json({ success: false, value:"email",message: "This email is used by another account. Please use another email." });
+            return res.status(200).json({ success: false, value:"email",message: "This email is used by another account. Please use another email." });
         }
         let userNameExist = await UserModel.findOne({userName:userName});
         if (userNameExist !== null && Object.keys(userNameExist).length > 0){
-            return res.status(401).json({ success: false, value:"username", message: "This username is used by another account. Please use another username." });
+            return res.status(200).json({ success: false, value:"username", message: "This username is used by another account. Please use another username." });
         }
         let userSaveResult = await user.save();
         console.log(userSaveResult);
@@ -42,7 +42,8 @@ router.post('/register', async(req, res) => {
         let profileSaveResult = await profile.save();
         console.log(profileSaveResult);
 
-        res.send(userSaveResult);
+        
+        return res.status(200).json({ success: true, value:userSaveResult, message: "Register successful" });
     }
     catch (err) {
         console.log(err);
@@ -59,9 +60,9 @@ router.post('/login', async (req, res) => {
       if (!user) {
         return res.status(404).json({ success: false, message: "User not found" });
       } else if (password !== user.password) {
-        return res.status(401).json({ success: false, message: "Invalid Email/password" });
+        return res.status(200).json({ success: false, message: "Invalid Email/password" });
       } else {
-        return res.status(200).json({ success: true, message: "User login successful" });
+        return res.status(200).json({ success: true, message: "User login successful", value:user });
       }
     } catch (err) {
       console.log(err);
@@ -112,12 +113,53 @@ router.delete('/deletebyusername', async(req, res) => {
 
 router.get('/getalluser', async(req, res) => {
     try {
-        let data = await UserModel.find();
+        let data = await ProfileModel.find().populate('userId' );
         res.send(data);
     }
     catch (err)
     {
 
+    }
+})
+
+router.post('/getuser', async(req, res) => {
+    const userId = req.body.userId;
+    try {
+        let data = await ProfileModel.findOne({userId: userId}).populate('userId' );
+        res.send(data);
+    }
+    catch (err)
+    {
+
+    }
+})
+
+router.put('/editprofile', async(req, res) => {
+    const _id = req.body._id;
+    const userId = req.body.userId;
+    const fullName = req.body.userId.fullName;
+    const userName = req.body.userId.userName;
+    const bio = req.body.bio;
+    // console.log(req.body);
+    const socialMediaLinks = req.body.socialMediaLinks;
+    try {
+        let userData = await UserModel.findOneAndUpdate(
+            {_id: userId._id},
+            {$set: {fullName: fullName, userName: userName}},
+            {new: true}
+        );
+        // console.log("user: "+userData);   
+
+        let profileData = await ProfileModel.findOneAndUpdate(
+            {_id: _id},
+            {$set: {bio: bio, socialMediaLinks: socialMediaLinks}},
+            {new: true}
+        ).populate('userId');
+        console.log("profile"+profileData);
+
+        return res.status(200).json({ success: true, message: "profile updated", value: profileData});
+    }
+    catch (err) {
     }
 })
 
