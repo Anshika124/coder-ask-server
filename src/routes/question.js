@@ -25,9 +25,10 @@ router.post('/addquestion', async (req, res) => {
     }
 });
 
+
 router.get('/allquestionlist', async (req, res) => {
     try {
-        let questionList = await QuestionModel.find({}).populate('postedBy');
+        let questionList = await QuestionModel.find({}).populate('postedBy').sort({ postedOn: -1 });
         res.send(questionList);
     }
     catch (err) {
@@ -35,10 +36,23 @@ router.get('/allquestionlist', async (req, res) => {
 })
 
 router.get('/questionlistofuser', async (req, res) => {
-    const userId = req.body.userId;
+    const userId = req.query.userId;
+    // console.log(userId);
     try {
-        let userQuestionList = await QuestionModel.find({postedBy:userId});
+        let userQuestionList = await QuestionModel.find({postedBy:userId}).sort({ postedOn: -1 }).populate('postedBy');
         res.send(userQuestionList);
+    }
+    catch (err){
+
+    }
+})
+
+router.get('/questionbyid', async (req, res) => {
+    const Id = req.query._id;
+    console.log(Id);
+    try {
+        let Question = await QuestionModel.find({_id: Id}).populate('answersList');
+        res.send(Question);
     }
     catch (err){
 

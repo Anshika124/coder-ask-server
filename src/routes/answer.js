@@ -41,10 +41,10 @@ router.get('/answerlistofquestion', async (req, res) => {
 })
 
 router.get('/answerlistofuser', async (req, res) => {
-    const {userId} = req.body;
+    const userId = req.query.userId;
 
     try {
-        let answerList = await AnswerModel.find({answeredBy : userId});
+        let answerList = await AnswerModel.find({answeredBy : userId}).sort({ postedOn: -1 }).populate('answerFor');
         res.send(answerList);
     }
     catch (err){
