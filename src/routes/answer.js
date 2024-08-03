@@ -105,7 +105,7 @@ router.put('/updateupvotecount', async (req, res) => {
         let upvotesCount = answer.upvotesList.filter(upvote => upvote.isUpvote).length;
         let downvotesCount = answer.upvotesList.filter(upvote => !upvote.isUpvote).length;
         await answer.save();
-        res.send({"upVoteCount":upvotesCount-downvotesCount});
+        res.send({"VoteCount":upvotesCount-downvotesCount});
 
     }
     catch (err) {

@@ -51,7 +51,10 @@ router.get('/questionbyid', async (req, res) => {
     const Id = req.query._id;
     console.log(Id);
     try {
-        let Question = await QuestionModel.find({_id: Id}).populate('answersList');
+        let Question = await QuestionModel.find({_id: Id}).populate({
+            path: 'answersList',
+            populate: { path: 'answeredBy' }
+        }).populate('postedBy');
         res.send(Question);
     }
     catch (err){
@@ -117,7 +120,21 @@ router.put('/updateupvotecount', async (req, res) => {
         let upvotesCount = question.upvotesList.filter(upvote => upvote.isUpvote).length;
         let downvotesCount = question.upvotesList.filter(upvote => !upvote.isUpvote).length;
         await question.save();
-        res.send({"upVoteCount":upvotesCount-downvotesCount});
+        res.send({"VoteCount":upvotesCount-downvotesCount});
+
+    }
+    catch (err) {
+    }
+})
+
+router.get('/votecount', async (req, res) => {
+    const { questionId } = req.query;
+
+    try {
+        let question = await QuestionModel.findOne({ _id: questionId });
+        let upvotesCount = question.upvotesList.filter(upvote => upvote.isUpvote).length;
+        let downvotesCount = question.upvotesList.filter(upvote => !upvote.isUpvote).length;
+        res.send({ "VoteCount": upvotesCount - downvotesCount });
 
     }
     catch (err) {
