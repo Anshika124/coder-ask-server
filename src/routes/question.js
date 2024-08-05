@@ -25,6 +25,51 @@ router.post('/addquestion', async (req, res) => {
     }
 });
 
+router.post('/addbookmarkquestion', async (req, res) => {
+    const { questionId, userId } = req.body;
+
+
+    try {
+        let question = await QuestionModel.findOne({ _id: questionId})
+        let profile = await ProfileModel.findOne({ userId: userId });
+        
+        profile.bookmarkedQuestions.push(questionId);
+        question.bookmarkedUsers.push(userId)
+        let bookmarkprofile = await profile.save();
+        let bookmarkques = await question.save();
+
+        return res.status(200).json({ success: true, message: "Question Bookmarked", value1: bookmarkprofile, value2: bookmarkques});
+    }
+    catch (err) {
+    }
+});
+
+router.post('/removebookmarkquestion', async (req, res) => {
+    const { questionId, userId } = req.body;
+    
+
+    try {
+        await ProfileModel.updateOne(
+            { userId: userId },
+            { $pull: { bookmarkedQuestions: questionId } }
+        );
+        
+        await QuestionModel.updateOne(
+            { _id: questionId },
+            { $pull: { bookmarkedUsers: userId } }
+        );
+        
+        let profile = await ProfileModel.findOne({ userId: userId });
+        let question = await QuestionModel.findOne({ _id: questionId })
+        // let bookmarkprofile = await p.save();
+        // let bookmarkques = await question.save();
+
+        return res.status(200).json({ success: true, message: "Question Bookmarked removed", value1: profile, value2: question });
+    }
+    catch (err) {
+    }
+});
+
 
 router.get('/allquestionlist', async (req, res) => {
     try {
@@ -62,6 +107,8 @@ router.get('/questionbyid', async (req, res) => {
     }
 })
 
+
+
 router.put('/updatequestion', async (req, res) => {
     const { questionId, title, tags, description } = req.body;
 
@@ -76,6 +123,8 @@ router.put('/updatequestion', async (req, res) => {
     catch (err){
     }
 })
+
+
 
 router.delete('/deletequestion', async (req, res) => {
     const { questionId } = req.body;

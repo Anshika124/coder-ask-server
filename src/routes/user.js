@@ -125,7 +125,10 @@ router.get('/getalluser', async(req, res) => {
 router.post('/getuser', async(req, res) => {
     const userId = req.body.userId;
     try {
-        let data = await ProfileModel.findOne({userId: userId}).populate('userId' );
+        let data = await ProfileModel.findOne({ userId: userId }).populate({
+            path: 'bookmarkedQuestions',
+            populate: {path: 'postedBy'}
+        }).populate('userId' );
         res.send(data);
     }
     catch (err)
