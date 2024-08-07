@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const AnswerModel = require("../models/answerModel.js");
 const QuestionModel = require("../models/questionModel.js");
 const ProfileModel = require("../models/profileModel.js");
+const answerModel = require("../models/answerModel.js");
 
 router.post('/addquestion', async (req, res) => {
     const { title, tags, description, postedBy} = req.body;
@@ -94,7 +95,7 @@ router.get('/questionlistofuser', async (req, res) => {
 
 router.get('/questionbyid', async (req, res) => {
     const Id = req.query._id;
-    console.log(Id);
+    // console.log(Id);
     try {
         let Question = await QuestionModel.find({_id: Id}).populate({
             path: 'answersList',
@@ -127,25 +128,27 @@ router.put('/updatequestion', async (req, res) => {
 
 
 router.delete('/deletequestion', async (req, res) => {
-    const { questionId } = req.body;
+    const { questionId } = req.query;
+    console.log('id hai: '+questionId);
 
     try {
+
+        let answers = await AnswerModel.find({ answerFor: questionId })
+        
+        answers.map(async(answer)=>{
+            await ProfileModel.updateOne(
+                { userId: answer.answeredBy },
+                { $pull: { answersList: answer._id } }
+            )
+        })
+    
+        await AnswerModel.deleteMany({ answerFor: questionId })
+
         let deletedQuestion = await QuestionModel.findOneAndDelete({ _id: questionId});
         await ProfileModel.updateOne(
             { userId: deletedQuestion.postedBy },
             { $pull: { questionsList: questionId } }
         );
-
-        let answers = await AnswerModel.findMany({answeredFor: questionId})
-
-        for (let answer in answers) {
-            await ProfileModel.updateOne(
-                {userId: answer.answeredBy},
-                { $pull: { answersList: answer._id}}
-            )
-        }
-
-        await AnswerModel.deleteMany({answeredFor: questionId})
 
         res.send(deletedQuestion);
     }
