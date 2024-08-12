@@ -81,6 +81,24 @@ router.get('/allquestionlist', async (req, res) => {
     }
 })
 
+
+router.get('/searchquestion', async (req, res) => {
+    const query = req.query.query;
+    try {
+        
+        let result = await QuestionModel.find({
+            title: { $regex: query, $options: 'i' } // 'i' makes it case-insensitive
+        })
+            .populate('postedBy')
+            .sort({ postedOn: -1 });
+
+        res.send(result);
+    } catch (err) {
+        res.status(500).send({ error: 'An error occurred while searching for questions' });
+    }
+});
+
+
 router.get('/questionlistofuser', async (req, res) => {
     const userId = req.query.userId;
     // console.log(userId);
@@ -112,6 +130,7 @@ router.get('/questionbyid', async (req, res) => {
 
 router.put('/updatequestion', async (req, res) => {
     const { questionId, title, tags, description } = req.body;
+    
 
     try {
         let updatedQuestion = await QuestionModel.findOneAndUpdate(
@@ -119,7 +138,8 @@ router.put('/updatequestion', async (req, res) => {
             { $set : { title: title, tags:tags, description: description, editedOn: Date.now()}},
             { new: true}
         );
-        res.send(updatedQuestion);
+        
+        return res.status(200).json({ success: true, message: "Question updated", value: updatedQuestion });
     }
     catch (err){
     }

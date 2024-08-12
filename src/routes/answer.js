@@ -67,14 +67,14 @@ router.put('/updateanswer', async (req, res) => {
     }
 })
 router.delete('/deleteanswer', async (req, res) => {
-    const { answerId } = req.body;
+    const { answerId } = req.query;
 
     try {
         let deletedAnswer = await AnswerModel.findOneAndDelete({ _id: answerId});
 
         await QuestionModel.updateOne(
             {_id: deletedAnswer.answerFor},
-            {$pull : {answerList: answerId}}
+            {$pull : {answersList: answerId}}
         )
         await ProfileModel.updateOne(
             { userId: deletedAnswer.answeredBy },
