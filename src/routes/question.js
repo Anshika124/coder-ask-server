@@ -119,6 +119,20 @@ router.get('/questionbyid', async (req, res) => {
             path: 'answersList',
             populate: { path: 'answeredBy' }
         }).populate('postedBy');
+        // console.log(Question[0].answersList[0]);
+        Question[0].answersList = Question[0].answersList.map((answer) => {
+            let upvotesCount = answer.upvotesList.filter(upvote => upvote.isUpvote).length;
+            let downvotesCount = answer.upvotesList.filter(upvote => !upvote.isUpvote).length;
+            let result = upvotesCount - downvotesCount;
+
+            // Add the new property `abc` to the answer object
+            return {
+                ...answer,  // Spread the original answer object
+                totalVotecount: result      // Add the new property
+            };
+        });
+        Question[0].answersList.sort((a, b) => b.totalVotecount - a.totalVotecount);
+        // console.log(Question[0].answersList[0])
         res.send(Question);
     }
     catch (err){

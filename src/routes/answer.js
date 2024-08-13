@@ -29,10 +29,13 @@ router.post('/addanswer', async (req, res) => {
 })
 
 router.get('/answerlistofquestion', async (req, res) => {
+    
     const {questionId} = req.body;
-
     try {
-        let answerList = await AnswerModel.find({answerFor : questionId});
+        
+        let answerList = await AnswerModel.find({ answerFor: questionId });
+        
+       
         res.send(answerList);
 
     }
