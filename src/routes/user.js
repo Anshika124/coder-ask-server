@@ -145,6 +145,12 @@ router.put('/editprofile', async(req, res) => {
     const bio = req.body.bio;
     // console.log(req.body);
     const socialMediaLinks = req.body.socialMediaLinks;
+    let userNameExist = await UserModel.findOne({ userName: userName });
+    // console.log(userNameExist);
+    if (userNameExist !== null && Object.keys(userNameExist).length > 0) {
+        return res.status(200).json({ success: false, value: "username", message: "This username is used by another account. Please use another username." });
+    }
+
     try {
         let userData = await UserModel.findOneAndUpdate(
             {_id: userId._id},
