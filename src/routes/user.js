@@ -59,14 +59,16 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    
     try {
         let user = await UserModel.findOne({ email: email });
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(200).json({ success: false, message: "User not found" });
         }
 
         // Compare the provided password with the hashed password
         const isMatch = await bcrypt.compare(password, user.password);
+        
         if (!isMatch) {
             return res.status(200).json({ success: false, message: "Invalid email/password" });
         }
