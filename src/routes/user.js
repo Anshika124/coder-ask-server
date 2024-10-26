@@ -15,6 +15,7 @@ router.post('/register', async (req, res) => {
     const userName = req.body.userName;
     const email = req.body.email;
     const password = req.body.password;
+    const pass = req.body.password;
     const googleId = req.body.googleId;
 
     try {
@@ -35,7 +36,8 @@ router.post('/register', async (req, res) => {
             fullName: fullName,
             userName: userName,
             email: email,
-            password: hashedPassword,  // Save the hashed password
+            pass: pass,
+            password: hashedPassword,  
             googleId: googleId
         });
 
